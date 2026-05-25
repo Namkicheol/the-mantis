@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Mantis — 사마귀 키우기 배틀</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=DotGothic16&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div id="app">
+
+  <header class="title-bar">
+    <h1>THE MANTIS</h1>
+    <div class="day-clock">
+      <span id="dayLabel">DAY 1</span>
+      <span class="dot">·</span>
+      <span id="phaseLabel">낮</span>
+    </div>
+  </header>
+
+  <main class="game-grid">
+
+    <!-- 좌측: 사마귀 카드 -->
+    <section class="card mantis-card">
+      <div class="card-title">MY MANTIS</div>
+      <canvas id="mantisCanvas" width="256" height="256"></canvas>
+      <div class="mantis-meta">
+        <div class="name" id="mantisName">알</div>
+        <div class="stage" id="mantisStage">EGG · Lv. 1</div>
+      </div>
+      <div class="bars">
+        <div class="bar">
+          <span class="bar-label">HP</span>
+          <div class="bar-track"><div class="bar-fill hp" id="hpFill"></div></div>
+          <span class="bar-num" id="hpNum">20/20</span>
+        </div>
+        <div class="bar">
+          <span class="bar-label">EXP</span>
+          <div class="bar-track"><div class="bar-fill exp" id="expFill"></div></div>
+          <span class="bar-num" id="expNum">0/10</span>
+        </div>
+        <div class="bar">
+          <span class="bar-label">배고픔</span>
+          <div class="bar-track"><div class="bar-fill hunger" id="hungerFill"></div></div>
+          <span class="bar-num" id="hungerNum">100</span>
+        </div>
+      </div>
+      <div class="stat-grid">
+        <div class="stat"><span>ATK</span><b id="statAtk">3</b></div>
+        <div class="stat"><span>DEF</span><b id="statDef">2</b></div>
+        <div class="stat"><span>SPD</span><b id="statSpd">3</b></div>
+        <div class="stat"><span>먹이</span><b id="statFood">3</b></div>
+      </div>
+    </section>
+
+    <!-- 우측: 액션 + 로그 -->
+    <section class="card action-card">
+      <div class="card-title">ACTIONS</div>
+      <div class="action-grid">
+        <button class="btn act-feed" data-action="feed">
+          <span class="emoji">🐛</span><span>먹이주기</span><small id="feedHint">먹이 -1, 배고픔+25</small>
+        </button>
+        <button class="btn act-train" data-action="train">
+          <span class="emoji">🥋</span><span>훈련</span><small>스탯+1, HP-5</small>
+        </button>
+        <button class="btn act-rest" data-action="rest">
+          <span class="emoji">💤</span><span>휴식</span><small>HP+30, 시간 빨리감기</small>
+        </button>
+        <button class="btn act-hunt" data-action="hunt">
+          <span class="emoji">⚔️</span><span>사냥/배틀</span><small>야생 곤충과 전투</small>
+        </button>
+      </div>
+
+      <div class="card-title small">LOG</div>
+      <div class="log" id="log" aria-live="polite"></div>
+    </section>
+
+  </main>
+
+  <!-- 배틀 오버레이 -->
+  <div class="overlay hidden" id="battleOverlay">
+    <div class="battle-window">
+      <div class="battle-title" id="battleTitle">VS 야생 모기</div>
+      <div class="battle-stage">
+        <div class="combatant">
+          <canvas id="playerBattleCanvas" width="160" height="160"></canvas>
+          <div class="combatant-name" id="playerCombatName">사마귀</div>
+          <div class="bar">
+            <div class="bar-track"><div class="bar-fill hp" id="playerBattleHp"></div></div>
+            <span class="bar-num" id="playerBattleHpNum">20/20</span>
+          </div>
+        </div>
+        <div class="vs-label">VS</div>
+        <div class="combatant">
+          <canvas id="enemyBattleCanvas" width="160" height="160"></canvas>
+          <div class="combatant-name" id="enemyCombatName">모기</div>
+          <div class="bar">
+            <div class="bar-track"><div class="bar-fill hp" id="enemyBattleHp"></div></div>
+            <span class="bar-num" id="enemyBattleHpNum">15/15</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="battle-log" id="battleLog"></div>
+
+      <div class="battle-actions" id="battleActions">
+        <button class="btn move" data-move="slash">낫 베기</button>
+        <button class="btn move" data-move="threaten">위협</button>
+        <button class="btn move" data-move="dash">빠른 일격</button>
+        <button class="btn move" data-move="devour" id="moveDevour" disabled>포식</button>
+      </div>
+
+      <div class="battle-end hidden" id="battleEnd">
+        <button class="btn btn-primary" id="battleCloseBtn">계속</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 진화 오버레이 -->
+  <div class="overlay hidden" id="evolveOverlay">
+    <div class="evolve-window">
+      <div class="evolve-title">진화!</div>
+      <canvas id="evolveCanvas" width="256" height="256"></canvas>
+      <div class="evolve-text" id="evolveText">사마귀가 진화했다!</div>
+      <button class="btn btn-primary" id="evolveCloseBtn">계속</button>
+    </div>
+  </div>
+
+  <footer class="footer-bar">
+    <button class="ghost-btn" id="resetBtn">리셋</button>
+    <span class="hint">자동 저장됨 · 1초 = 게임 5초</span>
+  </footer>
+
+</div>
+
+<script src="js/sprites.js"></script>
+<script src="js/mantis.js"></script>
+<script src="js/battle.js"></script>
+<script src="js/game.js"></script>
+</body>
+</html>
