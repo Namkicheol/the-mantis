@@ -349,6 +349,7 @@ html, body {
   font-size: 8px;
   color: var(--ink-dim);
 }
+.footer-left { display: flex; gap: 6px; }
 .ghost-btn {
   background: transparent;
   border: 1px solid var(--line);
@@ -357,8 +358,11 @@ html, body {
   font-size: 8px;
   padding: 6px 10px;
   cursor: pointer;
+  letter-spacing: 1px;
 }
-.ghost-btn:hover { color: var(--danger); border-color: var(--danger); }
+.ghost-btn:hover { color: var(--accent); border-color: var(--accent); }
+#resetBtn:hover { color: var(--danger); border-color: var(--danger); }
+.ghost-btn.muted { color: var(--ink-dim); border-color: var(--line); opacity: .6; }
 .hint { letter-spacing: 1px; }
 
 /* floating damage number */

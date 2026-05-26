@@ -103,18 +103,23 @@ function saveWithTimestamp() {
 
 // ---- actions ----
 function handleAction(action) {
-  if (action === 'feed')      return doSimple(Mantis.feed());
-  if (action === 'train')     return doSimple(Mantis.train());
-  if (action === 'rest')      return doSimple(Mantis.rest());
+  if (action === 'feed')      return doSimple(Mantis.feed(), 'feed');
+  if (action === 'train')     return doSimple(Mantis.train(), 'train');
+  if (action === 'rest')      return doSimple(Mantis.rest(), 'rest');
   if (action === 'hunt')      return startBattle();
 }
 
-function doSimple(result) {
+function doSimple(result, actionName) {
   if (!result.ok) {
+    Audio8.sfx('denied');
     UI.logRow(result.msg, 'warn');
     UI.refresh();
     return;
   }
+  // per-action sfx
+  if (actionName === 'feed') Audio8.sfx('feed');
+  else if (actionName === 'train') Audio8.sfx('train');
+  else if (actionName === 'rest') Audio8.sfx('rest');
   UI.logRow(result.msg, result.tone || 'good');
   // check evolution events (from gainExp)
   processPendingEvents();
@@ -132,6 +137,7 @@ Mantis.gainExp = function(amount) {
   for (const ev of events) {
     if (ev.type === 'levelup') {
       UI.logRow(`레벨업! Lv. ${ev.level}`, 'good');
+      Audio8.sfx('levelup');
     } else if (ev.type === 'evolve') {
       pendingEvolveEvent = ev;
     }
@@ -155,16 +161,20 @@ function showEvolveOverlay(stage) {
   renderCharacter($('evolveCanvas'), stage.sprite);
   $('evolveOverlay').classList.remove('hidden');
   UI.logRow(`✨ 진화! → ${stage.name}`, 'good');
+  Audio8.sfx('evolve');
 }
 
 // ---- battle UI ----
 function startBattle() {
   if (Mantis.state.stageIdx === 0) {
+    Audio8.sfx('denied');
     UI.logRow('아직 알이라 사냥할 수 없다.', 'warn');
     return;
   }
   const b = Battle.start(Mantis.state);
   if (!b) { UI.logRow('사냥감을 찾지 못했다.', 'warn'); return; }
+
+  Audio8.playBgm('battle');
 
   $('battleTitle').textContent = `VS ${b.enemy.name}`;
   $('enemyCombatName').textContent = b.enemy.name;
@@ -221,20 +231,26 @@ function handleMove(moveKey) {
   const events = Battle.playerMove(moveKey);
   for (const ev of events) {
     if (ev.type === 'attack' || ev.type === 'lifesteal') {
+      Audio8.sfx(ev.crit ? 'crit' : 'hit');
       appendBattleLog(ev.msg, ev.crit ? 'good' : '');
       shake('enemyBattleCanvas');
     } else if (ev.type === 'debuff') {
+      Audio8.sfx('select');
       appendBattleLog(ev.msg, 'warn');
     } else if (ev.type === 'enemyAttack') {
+      Audio8.sfx('enemyHit');
       appendBattleLog(ev.msg, 'bad');
       shake('playerBattleCanvas');
     } else if (ev.type === 'enemyDebuff') {
       appendBattleLog(ev.msg, 'warn');
     } else if (ev.type === 'win') {
+      Audio8.sfx('win');
       appendBattleLog(`${ev.enemy.name}을(를) 쓰러뜨렸다!`, 'good');
     } else if (ev.type === 'lose') {
+      Audio8.sfx('lose');
       appendBattleLog('사마귀가 쓰러졌다…', 'bad');
     } else if (ev.type === 'invalid') {
+      Audio8.sfx('denied');
       appendBattleLog(ev.msg, 'warn');
     }
   }
@@ -313,6 +329,7 @@ function init() {
 
   $('battleCloseBtn').addEventListener('click', () => {
     $('battleOverlay').classList.add('hidden');
+    Audio8.playBgm('main');
     UI.refresh();
     saveWithTimestamp();
   });
@@ -328,7 +345,42 @@ function init() {
     localStorage.removeItem(SAVE_KEY);
     UI.logRow('리셋. 새로운 알이다.', 'warn');
     UI.refresh();
+    Audio8.playBgm('main');
   });
+
+  // mute toggle (restore from storage)
+  const muteBtn = $('muteBtn');
+  try {
+    const savedMute = localStorage.getItem('the-mantis:muted') === '1';
+    if (savedMute) { Audio8.muted = true; muteBtn.classList.add('muted'); muteBtn.textContent = '🔇 BGM'; }
+  } catch {}
+  muteBtn.addEventListener('click', () => {
+    Audio8.ensure();
+    const next = !Audio8.muted;
+    Audio8.setMuted(next);
+    muteBtn.textContent = next ? '🔇 BGM' : '🔊 BGM';
+    muteBtn.classList.toggle('muted', next);
+    if (!next) Audio8.playBgm(Battle.active ? 'battle' : 'main');
+  });
+
+  // start BGM + click sounds on first user interaction (browser autoplay policy)
+  const startAudioOnce = () => {
+    Audio8.ensure();
+    Audio8.resumeIfNeeded();
+    if (!Audio8.muted) Audio8.playBgm('main');
+    document.removeEventListener('pointerdown', startAudioOnce, true);
+    document.removeEventListener('keydown', startAudioOnce, true);
+  };
+  document.addEventListener('pointerdown', startAudioOnce, true);
+  document.addEventListener('keydown', startAudioOnce, true);
+
+  // light click sfx on every button (excluding mute itself to avoid double-trigger UX)
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('button.btn, button.ghost-btn');
+    if (!btn) return;
+    if (btn.id === 'muteBtn') return;
+    Audio8.sfx('click');
+  }, true);
 
   // save on unload
   window.addEventListener('beforeunload', saveWithTimestamp);
