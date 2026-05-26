@@ -99,16 +99,18 @@ html, body {
 
 /* mantis card */
 .mantis-card { display: flex; flex-direction: column; align-items: center; }
+#mantisCanvas,
+#playerBattleCanvas,
+#enemyBattleCanvas,
+#evolveCanvas {
+  image-rendering: auto;
+}
 #mantisCanvas {
   width: 256px;
   height: 256px;
-  background: repeating-linear-gradient(
-    45deg,
-    #14201f 0 8px,
-    #16221f 8px 16px
-  );
+  background:
+    radial-gradient(circle at 30% 25%, #233331 0%, #0e1614 70%);
   border: 2px solid var(--line);
-  image-rendering: pixelated;
   margin-bottom: 12px;
 }
 .mantis-meta { text-align: center; margin-bottom: 12px; }
@@ -248,9 +250,8 @@ html, body {
 .combatant canvas {
   width: 160px;
   height: 160px;
-  background: #0a0f10;
+  background: radial-gradient(circle at 40% 30%, #1f2c2a 0%, #060a0a 75%);
   border: 2px solid var(--line);
-  image-rendering: pixelated;
 }
 .combatant-name {
   font-size: 9px;
@@ -317,7 +318,6 @@ html, body {
   height: 256px;
   background: radial-gradient(circle, #2a4030 0%, #0a0f10 70%);
   border: 2px solid var(--accent);
-  image-rendering: pixelated;
   margin: 0 auto 12px;
   display: block;
 }
@@ -364,6 +364,8 @@ html, body {
 #resetBtn:hover { color: var(--danger); border-color: var(--danger); }
 .ghost-btn.muted { color: var(--ink-dim); border-color: var(--line); opacity: .6; }
 .hint { letter-spacing: 1px; }
+.hint a { color: var(--ink-dim); text-decoration: underline dotted; }
+.hint a:hover { color: var(--accent); }
 
 /* floating damage number */
 .dmg-popup {

@@ -272,22 +272,104 @@ function drawSprite(ctx, spriteName, scale, opts = {}) {
   }
 }
 
-// render sprite onto a canvas, centered, with optional ground shadow
+// Photo overrides — when available, drawn instead of pixel sprites.
+// Same keys as Sprites so callers stay unchanged.
+const PhotoSources = {
+  egg:      'assets/img/egg.jpg',
+  nymph:    'assets/img/nymph.jpg',
+  subadult: 'assets/img/subadult.jpg',
+  adult:    'assets/img/adult.jpg',
+  mosquito: 'assets/img/mosquito.jpg',
+  fly:      'assets/img/fly.jpg',
+  cricket:  'assets/img/cricket.jpg',
+  spider:   'assets/img/spider.jpg',
+  wasp:     'assets/img/wasp.jpg',
+  hornet:   'assets/img/hornet.jpg',
+};
+
+// image cache + per-canvas pending redraws
+const PhotoCache = {};
+const PendingRedraws = new Map(); // canvas -> { name, opts }
+
+function getPhoto(name) {
+  if (PhotoCache[name]) return PhotoCache[name];
+  const src = PhotoSources[name];
+  if (!src) return null;
+  const img = new Image();
+  img.loaded = false;
+  img.failed = false;
+  img.onload = () => {
+    img.loaded = true;
+    // re-render any canvases that were waiting on this image
+    for (const [canvas, pending] of PendingRedraws.entries()) {
+      if (pending.name === name) {
+        renderCharacter(canvas, pending.name, pending.opts);
+        PendingRedraws.delete(canvas);
+      }
+    }
+  };
+  img.onerror = () => { img.failed = true; };
+  img.src = src;
+  PhotoCache[name] = img;
+  return img;
+}
+
+// "contain"-style draw: preserve aspect ratio, center inside box
+function drawPhotoContain(ctx, img, x, y, w, h, flip) {
+  const iw = img.naturalWidth, ih = img.naturalHeight;
+  if (!iw || !ih) return;
+  const s = Math.min(w / iw, h / ih);
+  const dw = iw * s, dh = ih * s;
+  const dx = x + (w - dw) / 2;
+  const dy = y + (h - dh) / 2;
+  ctx.save();
+  if (flip) {
+    ctx.translate(dx + dw, dy);
+    ctx.scale(-1, 1);
+    ctx.drawImage(img, 0, 0, dw, dh);
+  } else {
+    ctx.drawImage(img, dx, dy, dw, dh);
+  }
+  ctx.restore();
+}
+
+// render character onto a canvas, centered, with optional ground shadow.
+// Uses photographic image when available, falls back to pixel sprite.
 function renderCharacter(canvas, spriteName, opts = {}) {
   const ctx = canvas.getContext('2d');
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  const scale = Math.floor(Math.min(canvas.width, canvas.height) / 16);
-  const w = scale * 16;
-  const ox = Math.floor((canvas.width - w) / 2);
-  const oy = Math.floor((canvas.height - w) / 2);
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
 
-  // ground shadow ellipse
+  const W = canvas.width, H = canvas.height;
+  const photo = getPhoto(spriteName);
+
+  // ground shadow ellipse (under either renderer)
   if (opts.shadow !== false) {
     ctx.fillStyle = 'rgba(0,0,0,0.35)';
     ctx.beginPath();
-    ctx.ellipse(canvas.width / 2, oy + w - scale, w * 0.35, scale * 1.2, 0, 0, Math.PI * 2);
+    const cy = H * 0.92;
+    ctx.ellipse(W / 2, cy, W * 0.35, H * 0.04, 0, 0, Math.PI * 2);
     ctx.fill();
   }
 
+  if (photo && photo.loaded && !photo.failed) {
+    // inset a few pixels for breathing room
+    const pad = Math.floor(Math.min(W, H) * 0.06);
+    drawPhotoContain(ctx, photo, pad, pad, W - pad * 2, H - pad * 2, opts.flip);
+    return;
+  }
+
+  if (photo && !photo.failed) {
+    // queue a redraw when the image finishes loading
+    PendingRedraws.set(canvas, { name: spriteName, opts });
+  }
+
+  // pixel-art fallback (also used as the initial placeholder)
+  ctx.imageSmoothingEnabled = false;
+  const scale = Math.floor(Math.min(W, H) / 16);
+  const w = scale * 16;
+  const ox = Math.floor((W - w) / 2);
+  const oy = Math.floor((H - w) / 2);
   drawSprite(ctx, spriteName, scale, { ox, oy, flip: opts.flip });
 }
