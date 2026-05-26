@@ -29,13 +29,17 @@ html, body {
   min-height: 100vh;
   image-rendering: pixelated;
   -webkit-font-smoothing: none;
+  overflow-x: hidden;          /* hard guard against horizontal scroll */
 }
 
 #app {
   max-width: 1100px;
   margin: 0 auto;
   padding: 20px 16px 32px;
+  width: 100%;
 }
+
+canvas { max-width: 100%; }
 
 .title-bar {
   display: flex;
@@ -383,4 +387,65 @@ html, body {
 @keyframes floatup {
   from { opacity: 1; transform: translateY(0); }
   to { opacity: 0; transform: translateY(-30px); }
+}
+
+/* ---- responsive: phones ---- */
+@media (max-width: 480px) {
+  #app { padding: 14px 10px 24px; }
+  .title-bar h1 { font-size: 16px; letter-spacing: 1px; }
+  .title-bar { padding-bottom: 10px; margin-bottom: 12px; }
+  .day-clock { font-size: 8px; }
+
+  .card { padding: 10px; }
+  .card-title { font-size: 9px; }
+
+  #mantisCanvas {
+    width: 100%;
+    max-width: 256px;
+    height: auto;
+    aspect-ratio: 1 / 1;
+  }
+
+  .action-grid { grid-template-columns: 1fr 1fr; gap: 6px; }
+  .btn { padding: 8px 6px; font-size: 9px; }
+  .btn .emoji { font-size: 16px; }
+  .btn small { font-size: 6px; }
+
+  .stat-grid { grid-template-columns: repeat(2, 1fr); }
+  .stat b { font-size: 11px; }
+
+  .bar { grid-template-columns: 48px 1fr 64px; gap: 6px; }
+  .bar-label, .bar-num { font-size: 7px; }
+
+  .log { height: 140px; font-size: 8px; }
+
+  .footer-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  /* battle overlay — stack vertically */
+  .battle-window { padding: 14px 12px; }
+  .battle-stage {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: 4px;
+  }
+  .combatant canvas { width: 140px; height: 140px; }
+  .combatant .bar { width: 140px; grid-template-columns: 1fr 50px; gap: 6px; }
+  .vs-label { font-size: 11px; padding: 2px 0; }
+  .battle-log { font-size: 8px; height: 70px; }
+  .battle-actions { grid-template-columns: 1fr 1fr; gap: 4px; }
+  .btn.move { padding: 10px 6px; font-size: 9px; }
+
+  .evolve-window { padding: 14px; }
+  #evolveCanvas { width: 100%; max-width: 220px; aspect-ratio: 1 / 1; height: auto; }
+  .evolve-title { font-size: 13px; }
+  .evolve-text { font-size: 10px; }
+}
+
+@media (max-width: 360px) {
+  .action-grid { grid-template-columns: 1fr; }
+  .stat-grid { grid-template-columns: 1fr 1fr; }
 }
