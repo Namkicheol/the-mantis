@@ -249,6 +249,17 @@ const Sprites = {
   },
 };
 
+// pixel fallback aliases for enemies that only have a photo (no unique pixel art).
+// keeps "image not loaded" state visually meaningful instead of an empty canvas.
+Sprites.ant         = Sprites.fly;
+Sprites.ladybug     = Sprites.cricket;
+Sprites.moth        = Sprites.fly;
+Sprites.grasshopper = Sprites.cricket;
+Sprites.dragonfly   = Sprites.mosquito;
+Sprites.centipede   = Sprites.spider;
+Sprites.stagbeetle  = Sprites.cricket;
+Sprites.scorpion    = Sprites.spider;
+
 // draw a 16x16 sprite onto a canvas, scaled to fit
 function drawSprite(ctx, spriteName, scale, opts = {}) {
   const sprite = Sprites[spriteName];
@@ -275,16 +286,27 @@ function drawSprite(ctx, spriteName, scale, opts = {}) {
 // Photo overrides — when available, drawn instead of pixel sprites.
 // Same keys as Sprites so callers stay unchanged.
 const PhotoSources = {
+  // mantis stages
   egg:      'assets/img/egg.jpg',
   nymph:    'assets/img/nymph.jpg',
   subadult: 'assets/img/subadult.jpg',
   adult:    'assets/img/adult.jpg',
+  // enemies — original 6
   mosquito: 'assets/img/mosquito.jpg',
   fly:      'assets/img/fly.jpg',
   cricket:  'assets/img/cricket.jpg',
   spider:   'assets/img/spider.jpg',
   wasp:     'assets/img/wasp.jpg',
   hornet:   'assets/img/hornet.jpg',
+  // enemies — added pack
+  ant:         'assets/img/ant.jpg',
+  ladybug:     'assets/img/ladybug.jpg',
+  moth:        'assets/img/moth.jpg',
+  grasshopper: 'assets/img/grasshopper.jpg',
+  dragonfly:   'assets/img/dragonfly.jpg',
+  centipede:   'assets/img/centipede.jpg',
+  stagbeetle:  'assets/img/stagbeetle.jpg',
+  scorpion:    'assets/img/scorpion.jpg',
 };
 
 // image cache + per-canvas pending redraws

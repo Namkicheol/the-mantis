@@ -274,8 +274,21 @@ canvas {
 .combatant {
   width: 100%;
   min-width: 0;
+  position: relative;
 }
+.sprite-wrap {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  max-width: 160px;
+  margin: 0 auto;
+  animation: bob 1.8s ease-in-out infinite;
+  will-change: transform;
+}
+.combatant.right .sprite-wrap { animation-delay: -0.9s; }
+
 .combatant canvas {
+  display: block;
   width: 100%;
   max-width: 160px;
   aspect-ratio: 1 / 1;
@@ -283,6 +296,78 @@ canvas {
   margin: 0 auto;
   background: radial-gradient(circle at 40% 30%, #1f2c2a 0%, #060a0a 75%);
   border: 2px solid var(--line);
+  transition: transform 180ms ease-out, filter 160ms ease-out, box-shadow 160ms;
+  transform-origin: center bottom;
+}
+
+/* enter animations */
+.combatant.left.enter .sprite-wrap  { animation: enterFromLeft 360ms ease-out, bob 1.8s ease-in-out infinite 360ms; }
+.combatant.right.enter .sprite-wrap { animation: enterFromRight 360ms ease-out, bob 1.8s ease-in-out infinite 360ms; }
+
+/* attack lunge */
+.combatant.attacking canvas { transform: translateX(40px) scale(1.06); }
+.combatant.right.attacking canvas { transform: translateX(-40px) scale(1.06); }
+
+/* hit shake + red flash */
+.combatant.hit canvas {
+  animation: hitShake 340ms cubic-bezier(.36,.07,.19,.97);
+  filter: brightness(0.55) saturate(1.6) sepia(0.4) hue-rotate(-20deg);
+  box-shadow: 0 0 0 2px var(--danger), 0 0 24px rgba(239,90,90,.5);
+}
+.combatant.crit canvas {
+  animation: critShake 460ms cubic-bezier(.36,.07,.19,.97);
+  filter: brightness(0.4) saturate(2) sepia(0.5) hue-rotate(-10deg);
+  box-shadow: 0 0 0 3px var(--gold), 0 0 32px rgba(242,193,78,.7);
+}
+
+/* faint / KO */
+.combatant.faint canvas {
+  animation: faint 700ms ease-out forwards;
+  filter: brightness(0.3) saturate(0);
+}
+
+/* keyframes */
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-5px); }
+}
+@keyframes hitShake {
+  0%       { transform: translateX(0) rotate(0); }
+  15%      { transform: translateX(-10px) rotate(-3deg); }
+  30%      { transform: translateX(8px) rotate(2deg); }
+  45%      { transform: translateX(-6px) rotate(-2deg); }
+  60%      { transform: translateX(4px) rotate(1deg); }
+  100%     { transform: translateX(0) rotate(0); }
+}
+@keyframes critShake {
+  0%, 100% { transform: translate(0,0) rotate(0) scale(1); }
+  10%      { transform: translate(-14px, 2px) rotate(-4deg) scale(1.05); }
+  25%      { transform: translate(12px, -3px) rotate(3deg) scale(1.05); }
+  40%      { transform: translate(-9px, 3px) rotate(-3deg); }
+  55%      { transform: translate(7px, -2px) rotate(2deg); }
+  70%      { transform: translate(-4px, 1px) rotate(-1deg); }
+}
+@keyframes faint {
+  0%   { opacity: 1; transform: translateY(0) rotate(0); }
+  40%  { opacity: 1; transform: translateY(-8px) rotate(10deg); }
+  100% { opacity: 0; transform: translateY(60px) rotate(70deg); }
+}
+@keyframes enterFromLeft {
+  from { opacity: 0; transform: translateX(-60px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes enterFromRight {
+  from { opacity: 0; transform: translateX(60px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* battle-window pulse on crit */
+.battle-window.flash {
+  animation: bgFlash 220ms ease-out;
+}
+@keyframes bgFlash {
+  0%, 100% { background: linear-gradient(180deg, var(--bg-2), var(--bg-1)); }
+  50%      { background: linear-gradient(180deg, #4a2828, #2a1414); }
 }
 .combatant-name {
   font-size: 9px;
@@ -406,19 +491,26 @@ canvas {
 /* floating damage number */
 .dmg-popup {
   position: absolute;
+  top: 12%;
+  left: 50%;
   font-family: var(--pixel);
-  font-size: 16px;
+  font-size: 18px;
   color: var(--danger);
-  text-shadow: 2px 2px 0 #000;
+  text-shadow: 2px 2px 0 #000, 0 0 8px rgba(239,90,90,.6);
   pointer-events: none;
-  animation: floatup 800ms ease-out forwards;
+  animation: floatup 900ms ease-out forwards;
   z-index: 200;
+  letter-spacing: 1px;
+  white-space: nowrap;
 }
-.dmg-popup.heal { color: var(--accent-2); }
-.dmg-popup.crit { color: var(--gold); font-size: 22px; }
+.dmg-popup.heal { color: var(--accent-2); text-shadow: 2px 2px 0 #000, 0 0 8px rgba(125,212,122,.6); }
+.dmg-popup.crit { color: var(--gold); font-size: 26px; text-shadow: 2px 2px 0 #000, 0 0 12px rgba(242,193,78,.8); }
+.dmg-popup.miss { color: var(--ink-dim); font-size: 14px; }
 @keyframes floatup {
-  from { opacity: 1; transform: translateY(0); }
-  to { opacity: 0; transform: translateY(-30px); }
+  0%   { opacity: 0; transform: translate(-50%, 10px) scale(0.6); }
+  20%  { opacity: 1; transform: translate(-50%, -4px) scale(1.15); }
+  40%  { transform: translate(-50%, -10px) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -42px) scale(0.95); }
 }
 
 /* ---- responsive: phones ---- */

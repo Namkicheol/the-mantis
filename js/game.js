@@ -193,6 +193,17 @@ function startBattle() {
     btn.disabled = (move.minStage || 1) > Mantis.state.stageIdx;
   });
 
+  // remove any leftover state from a previous battle
+  ['playerCombatant', 'enemyCombatant'].forEach(id => {
+    const el = $(id);
+    if (!el) return;
+    el.classList.remove('attacking', 'hit', 'crit', 'faint');
+  });
+
+  // play enter slide animation
+  trigger('playerCombatant', 'enter', 360);
+  trigger('enemyCombatant', 'enter', 360);
+
   $('battleEnd').classList.add('hidden');
   $('battleActions').style.display = 'grid';
   $('battleOverlay').classList.remove('hidden');
@@ -218,44 +229,144 @@ function appendBattleLog(text, tone) {
   log.scrollTop = log.scrollHeight;
 }
 
-function shake(canvasId) {
-  const el = $(canvasId);
-  el.classList.remove('shake');
-  // force reflow
-  void el.offsetWidth;
-  el.classList.add('shake');
+// ---- battle animations ----
+function trigger(combatantId, cls, durationMs) {
+  const el = $(combatantId);
+  if (!el) return;
+  el.classList.remove(cls);
+  void el.offsetWidth; // reflow
+  el.classList.add(cls);
+  if (durationMs) {
+    setTimeout(() => el.classList.remove(cls), durationMs);
+  }
+}
+
+function spawnDamage(combatantId, text, kind) {
+  const host = $(combatantId);
+  if (!host) return;
+  const wrap = host.querySelector('.sprite-wrap');
+  if (!wrap) return;
+  const el = document.createElement('div');
+  el.className = 'dmg-popup' + (kind ? ' ' + kind : '');
+  el.textContent = text;
+  wrap.appendChild(el);
+  setTimeout(() => el.remove(), 1000);
+}
+
+function flashBattleBg() {
+  const w = document.querySelector('.battle-window');
+  if (!w) return;
+  w.classList.remove('flash');
+  void w.offsetWidth;
+  w.classList.add('flash');
+  setTimeout(() => w.classList.remove('flash'), 240);
 }
 
 function handleMove(moveKey) {
   if (!Battle.active || Battle.active.done) return;
+  // disable buttons briefly so player can't spam during animation
+  document.querySelectorAll('.battle-actions .btn').forEach(b => b.disabled = true);
+
   const events = Battle.playerMove(moveKey);
-  for (const ev of events) {
-    if (ev.type === 'attack' || ev.type === 'lifesteal') {
-      Audio8.sfx(ev.crit ? 'crit' : 'hit');
-      appendBattleLog(ev.msg, ev.crit ? 'good' : '');
-      shake('enemyBattleCanvas');
-    } else if (ev.type === 'debuff') {
+
+  // sequence: player lunge -> enemy hit -> short pause -> enemy attack -> player hit
+  const playerAttackEv = events.find(e => e.type === 'attack' || e.type === 'lifesteal');
+  const playerDebuffEv = events.find(e => e.type === 'debuff');
+  const enemyAttackEv = events.find(e => e.type === 'enemyAttack');
+  const enemyDebuffEv = events.find(e => e.type === 'enemyDebuff');
+  const winEv = events.find(e => e.type === 'win');
+  const loseEv = events.find(e => e.type === 'lose');
+  const invalidEv = events.find(e => e.type === 'invalid');
+
+  if (invalidEv) {
+    Audio8.sfx('denied');
+    appendBattleLog(invalidEv.msg, 'warn');
+    enableBattleButtons();
+    return;
+  }
+
+  let t = 0;
+
+  // ---- player offensive turn ----
+  if (playerAttackEv) {
+    setTimeout(() => trigger('playerCombatant', 'attacking', 220), t);
+    t += 220;
+    setTimeout(() => {
+      Audio8.sfx(playerAttackEv.crit ? 'crit' : 'hit');
+      trigger('enemyCombatant', playerAttackEv.crit ? 'crit' : 'hit', playerAttackEv.crit ? 460 : 340);
+      spawnDamage('enemyCombatant', '-' + playerAttackEv.dmg, playerAttackEv.crit ? 'crit' : '');
+      if (playerAttackEv.crit) flashBattleBg();
+      if (playerAttackEv.type === 'lifesteal' && playerAttackEv.heal) {
+        spawnDamage('playerCombatant', '+' + playerAttackEv.heal, 'heal');
+      }
+      appendBattleLog(playerAttackEv.msg, playerAttackEv.crit ? 'good' : '');
+      refreshBattleHud();
+    }, t);
+    t += playerAttackEv.crit ? 480 : 360;
+  } else if (playerDebuffEv) {
+    setTimeout(() => {
       Audio8.sfx('select');
-      appendBattleLog(ev.msg, 'warn');
-    } else if (ev.type === 'enemyAttack') {
-      Audio8.sfx('enemyHit');
-      appendBattleLog(ev.msg, 'bad');
-      shake('playerBattleCanvas');
-    } else if (ev.type === 'enemyDebuff') {
-      appendBattleLog(ev.msg, 'warn');
-    } else if (ev.type === 'win') {
+      trigger('playerCombatant', 'attacking', 200);
+      appendBattleLog(playerDebuffEv.msg, 'warn');
+    }, t);
+    t += 320;
+  }
+
+  // ---- handle win before enemy turn ----
+  if (winEv) {
+    setTimeout(() => {
+      trigger('enemyCombatant', 'faint', 700);
       Audio8.sfx('win');
-      appendBattleLog(`${ev.enemy.name}을(를) 쓰러뜨렸다!`, 'good');
-    } else if (ev.type === 'lose') {
+      appendBattleLog(`${winEv.enemy.name}을(를) 쓰러뜨렸다!`, 'good');
+    }, t);
+    t += 800;
+    setTimeout(() => { refreshBattleHud(); endBattle(); }, t);
+    return;
+  }
+
+  // ---- enemy retaliation ----
+  if (enemyAttackEv) {
+    setTimeout(() => trigger('enemyCombatant', 'attacking', 220), t);
+    t += 220;
+    setTimeout(() => {
+      Audio8.sfx('enemyHit');
+      trigger('playerCombatant', enemyAttackEv.crit ? 'crit' : 'hit', enemyAttackEv.crit ? 460 : 340);
+      spawnDamage('playerCombatant', '-' + enemyAttackEv.dmg, enemyAttackEv.crit ? 'crit' : '');
+      if (enemyAttackEv.crit) flashBattleBg();
+      appendBattleLog(enemyAttackEv.msg, 'bad');
+      refreshBattleHud();
+    }, t);
+    t += enemyAttackEv.crit ? 480 : 360;
+  } else if (enemyDebuffEv) {
+    setTimeout(() => {
+      trigger('enemyCombatant', 'attacking', 200);
+      appendBattleLog(enemyDebuffEv.msg, 'warn');
+    }, t);
+    t += 320;
+  }
+
+  // ---- lose ----
+  if (loseEv) {
+    setTimeout(() => {
+      trigger('playerCombatant', 'faint', 700);
       Audio8.sfx('lose');
       appendBattleLog('사마귀가 쓰러졌다…', 'bad');
-    } else if (ev.type === 'invalid') {
-      Audio8.sfx('denied');
-      appendBattleLog(ev.msg, 'warn');
-    }
+    }, t);
+    t += 800;
+    setTimeout(() => { refreshBattleHud(); endBattle(); }, t);
+    return;
   }
-  refreshBattleHud();
-  if (Battle.active && Battle.active.done) endBattle();
+
+  setTimeout(enableBattleButtons, t + 80);
+}
+
+function enableBattleButtons() {
+  if (!Battle.active || Battle.active.done) return;
+  document.querySelectorAll('.battle-actions .btn').forEach(btn => {
+    const moveKey = btn.dataset.move;
+    const move = MOVES[moveKey];
+    btn.disabled = (move.minStage || 1) > Battle.active.player.stageIdx;
+  });
 }
 
 function endBattle() {

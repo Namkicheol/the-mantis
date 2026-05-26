@@ -1,12 +1,27 @@
 // Battle: enemies, moves, turn-based combat against wild bugs.
 
 const ENEMIES = [
-  { key: 'mosquito', sprite: 'mosquito', name: '야생 모기',    hp: 15, atk: 4,  def: 1,  spd: 8,  rewardExp: 8,  rewardFood: 1, tier: 1 },
-  { key: 'fly',      sprite: 'fly',      name: '집파리',       hp: 22, atk: 5,  def: 2,  spd: 6,  rewardExp: 12, rewardFood: 1, tier: 1 },
-  { key: 'cricket',  sprite: 'cricket',  name: '귀뚜라미',     hp: 35, atk: 7,  def: 3,  spd: 5,  rewardExp: 22, rewardFood: 2, tier: 2 },
-  { key: 'spider',   sprite: 'spider',   name: '거미',         hp: 55, atk: 11, def: 5,  spd: 6,  rewardExp: 42, rewardFood: 3, tier: 3 },
-  { key: 'wasp',     sprite: 'wasp',     name: '말벌',         hp: 70, atk: 14, def: 6,  spd: 9,  rewardExp: 60, rewardFood: 3, tier: 3 },
-  { key: 'hornet',   sprite: 'hornet',   name: '장수말벌',     hp: 120,atk: 20, def: 9,  spd: 10, rewardExp: 110,rewardFood: 5, tier: 4 },
+  // ---- tier 1: nymph 이후 등장 ----
+  { key: 'mosquito',    sprite: 'mosquito',    name: '야생 모기',      hp: 15,  atk: 4,  def: 1,  spd: 8,  rewardExp: 8,   rewardFood: 1, tier: 1 },
+  { key: 'fly',         sprite: 'fly',         name: '집파리',         hp: 22,  atk: 5,  def: 2,  spd: 6,  rewardExp: 12,  rewardFood: 1, tier: 1 },
+  { key: 'ant',         sprite: 'ant',         name: '일개미',         hp: 20,  atk: 5,  def: 3,  spd: 7,  rewardExp: 12,  rewardFood: 1, tier: 1 },
+  { key: 'ladybug',     sprite: 'ladybug',     name: '무당벌레',       hp: 26,  atk: 4,  def: 5,  spd: 4,  rewardExp: 14,  rewardFood: 1, tier: 1 },
+
+  // ---- tier 2: subadult 이후 등장 ----
+  { key: 'cricket',     sprite: 'cricket',     name: '귀뚜라미',       hp: 35,  atk: 7,  def: 3,  spd: 5,  rewardExp: 22,  rewardFood: 2, tier: 2 },
+  { key: 'moth',        sprite: 'moth',        name: '나방',           hp: 32,  atk: 6,  def: 4,  spd: 6,  rewardExp: 24,  rewardFood: 2, tier: 2 },
+  { key: 'grasshopper', sprite: 'grasshopper', name: '메뚜기',         hp: 38,  atk: 9,  def: 3,  spd: 9,  rewardExp: 28,  rewardFood: 2, tier: 2 },
+
+  // ---- tier 3: adult 초~중반 ----
+  { key: 'spider',      sprite: 'spider',      name: '거미',           hp: 55,  atk: 11, def: 5,  spd: 6,  rewardExp: 42,  rewardFood: 3, tier: 3 },
+  { key: 'dragonfly',   sprite: 'dragonfly',   name: '잠자리',         hp: 52,  atk: 11, def: 4,  spd: 12, rewardExp: 46,  rewardFood: 3, tier: 3 },
+  { key: 'wasp',        sprite: 'wasp',        name: '말벌',           hp: 70,  atk: 14, def: 6,  spd: 9,  rewardExp: 60,  rewardFood: 3, tier: 3 },
+  { key: 'centipede',   sprite: 'centipede',   name: '왕지네',         hp: 75,  atk: 13, def: 7,  spd: 7,  rewardExp: 64,  rewardFood: 3, tier: 3 },
+  { key: 'stagbeetle',  sprite: 'stagbeetle',  name: '사슴벌레',       hp: 95,  atk: 14, def: 10, spd: 4,  rewardExp: 72,  rewardFood: 4, tier: 3 },
+
+  // ---- tier 4: adult 후반 / 보스 ----
+  { key: 'scorpion',    sprite: 'scorpion',    name: '전갈',           hp: 110, atk: 18, def: 8,  spd: 8,  rewardExp: 100, rewardFood: 4, tier: 4 },
+  { key: 'hornet',      sprite: 'hornet',      name: '장수말벌',       hp: 130, atk: 20, def: 9,  spd: 10, rewardExp: 120, rewardFood: 5, tier: 4 },
 ];
 
 const MOVES = {

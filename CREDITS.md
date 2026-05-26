@@ -17,6 +17,14 @@ exact licensing terms and the original photographer's credit.
 | 거미 (spider) | spider.jpg | https://commons.wikimedia.org/wiki/File:PlatycryptusUndatusFemale.jpg |
 | 말벌 (wasp) | wasp.jpg | https://commons.wikimedia.org/wiki/File:European_wasp_white_bg.jpg |
 | 장수말벌 (hornet) | hornet.jpg | https://commons.wikimedia.org/wiki/File:20200512-P1100071_Vespa_mandarinia_japonica.jpg |
+| 일개미 (ant) | ant.jpg | https://commons.wikimedia.org/wiki/File:Red_Ant_-_March_2025.jpg |
+| 무당벌레 (ladybug) | ladybug.jpg | https://commons.wikimedia.org/wiki/File:Coccinella-septempunctata-15-fws.jpg |
+| 메뚜기 (grasshopper) | grasshopper.jpg | https://commons.wikimedia.org/wiki/File:American_Bird_Grasshopper.jpg |
+| 나방 (moth) | moth.jpg | https://commons.wikimedia.org/wiki/File:Autographa_gamma_en_Trachelospermum_jasminoides_-_02.jpg |
+| 잠자리 (dragonfly) | dragonfly.jpg | https://commons.wikimedia.org/wiki/File:Red_grasshawk_(Neurothemis_fluctuans)_male_Phuket_2.jpg |
+| 사슴벌레 (stagbeetle) | stagbeetle.jpg | https://commons.wikimedia.org/wiki/File:Golden_stag_beetle.jpg |
+| 왕지네 (centipede) | centipede.jpg | https://commons.wikimedia.org/wiki/File:Scolopendra_gigantea.jpg |
+| 전갈 (scorpion) | scorpion.jpg | https://commons.wikimedia.org/wiki/File:Scorpion_Photograph_By_Shantanu_Kuveskar.jpg |
 
 If a specific image's license requires changes (e.g. removal, attribution adjustment),
 please open an issue and it will be addressed.
