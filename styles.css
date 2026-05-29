@@ -68,7 +68,7 @@ canvas {
 }
 
 .title-bar h1 {
-  font-size: 22px;
+  font-size: 28px;
   margin: 0;
   letter-spacing: 2px;
   color: var(--accent-2);
@@ -76,7 +76,7 @@ canvas {
 }
 
 .day-clock {
-  font-size: 10px;
+  font-size: 13px;
   color: var(--ink-dim);
   letter-spacing: 1px;
 }
@@ -110,13 +110,13 @@ canvas {
 }
 
 .card-title {
-  font-size: 10px;
+  font-size: 13px;
   letter-spacing: 2px;
   color: var(--accent);
   margin-bottom: 10px;
   text-transform: uppercase;
 }
-.card-title.small { margin-top: 14px; font-size: 9px; color: var(--ink-dim); }
+.card-title.small { margin-top: 14px; font-size: 12px; color: var(--ink-dim); }
 
 /* mantis card */
 .mantis-card { display: flex; flex-direction: column; align-items: center; }
@@ -137,21 +137,21 @@ canvas {
   margin-bottom: 12px;
 }
 .mantis-meta { text-align: center; margin-bottom: 12px; }
-.mantis-meta .name { font-size: 14px; color: var(--accent-2); margin-bottom: 4px; }
-.mantis-meta .stage { font-size: 9px; color: var(--ink-dim); letter-spacing: 1px; }
+.mantis-meta .name { font-size: 18px; color: var(--accent-2); margin-bottom: 4px; }
+.mantis-meta .stage { font-size: 12px; color: var(--ink-dim); letter-spacing: 1px; }
 
 .bars { width: 100%; margin-bottom: 12px; }
 .bar {
   display: grid;
-  grid-template-columns: 56px 1fr 78px;
+  grid-template-columns: 68px 1fr 96px;
   align-items: center;
   gap: 8px;
   margin-bottom: 6px;
 }
-.bar-label { font-size: 8px; color: var(--ink-dim); }
-.bar-num { font-size: 8px; color: var(--ink); text-align: right; }
+.bar-label { font-size: 11px; color: var(--ink-dim); }
+.bar-num { font-size: 11px; color: var(--ink); text-align: right; }
 .bar-track {
-  height: 12px;
+  height: 16px;
   background: #0a0f10;
   border: 1px solid var(--line);
   position: relative;
@@ -175,13 +175,13 @@ canvas {
 .stat {
   background: var(--bg-3);
   border: 1px solid var(--line);
-  padding: 6px 4px;
+  padding: 8px 4px;
   text-align: center;
-  font-size: 8px;
+  font-size: 11px;
   letter-spacing: 1px;
 }
-.stat span { color: var(--ink-dim); display: block; margin-bottom: 4px; }
-.stat b { color: var(--accent-2); font-size: 12px; }
+.stat span { color: var(--ink-dim); display: block; margin-bottom: 5px; }
+.stat b { color: var(--accent-2); font-size: 16px; }
 
 /* action card */
 .action-grid {
@@ -191,22 +191,22 @@ canvas {
 }
 .btn {
   font-family: var(--pixel);
-  font-size: 10px;
+  font-size: 13px;
   background: var(--bg-3);
   color: var(--ink);
   border: 2px solid var(--line);
-  padding: 10px 8px;
+  padding: 12px 10px;
   cursor: pointer;
   position: relative;
   text-align: left;
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 4px;
   transition: transform 80ms;
   letter-spacing: 1px;
 }
-.btn .emoji { font-size: 18px; font-family: inherit; }
-.btn small { color: var(--ink-dim); font-size: 7px; letter-spacing: 0.5px; }
+.btn .emoji { font-size: 22px; font-family: inherit; }
+.btn small { color: var(--ink-dim); font-size: 10px; letter-spacing: 0.5px; }
 .btn:hover { background: #2c3a3e; border-color: var(--accent); color: var(--accent-2); }
 .btn:active { transform: translate(1px, 1px); }
 .btn:disabled { opacity: .4; cursor: not-allowed; }
@@ -216,12 +216,12 @@ canvas {
 .act-hunt:hover { border-color: var(--danger); color: #ffd0d0; }
 
 .log {
-  height: 180px;
+  height: 200px;
   overflow-y: auto;
   background: #0a0f10;
   border: 1px solid var(--line);
-  padding: 8px;
-  font-size: 9px;
+  padding: 10px;
+  font-size: 13px;
   line-height: 1.6;
   color: var(--ink);
   font-family: 'DotGothic16', monospace;
@@ -256,7 +256,7 @@ canvas {
 }
 
 .battle-title {
-  font-size: 12px;
+  font-size: 15px;
   text-align: center;
   color: var(--danger);
   letter-spacing: 2px;
@@ -370,31 +370,31 @@ canvas {
   50%      { background: linear-gradient(180deg, #4a2828, #2a1414); }
 }
 .combatant-name {
-  font-size: 9px;
+  font-size: 12px;
   letter-spacing: 1px;
   margin: 8px 0 6px;
   color: var(--accent-2);
   text-align: center;
 }
 .combatant .bar {
-  grid-template-columns: 1fr 50px;
+  grid-template-columns: 1fr 64px;
   width: 100%;
   max-width: 160px;
   margin: 0 auto;
 }
 .vs-label {
-  font-size: 14px;
+  font-size: 18px;
   color: var(--gold);
   text-shadow: 2px 2px 0 #000;
 }
 
 .battle-log {
-  height: 80px;
+  height: 100px;
   overflow-y: auto;
   background: #0a0f10;
   border: 1px solid var(--line);
-  padding: 6px 8px;
-  font-size: 9px;
+  padding: 8px 10px;
+  font-size: 12px;
   font-family: 'DotGothic16', monospace;
   margin-bottom: 12px;
   line-height: 1.6;
@@ -410,8 +410,8 @@ canvas {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 12px 8px;
-  font-size: 10px;
+  padding: 14px 8px;
+  font-size: 13px;
 }
 
 .battle-end { text-align: center; margin-top: 12px; }
@@ -421,8 +421,8 @@ canvas {
   background: var(--accent);
   color: #0a0f10;
   border-color: var(--accent-2);
-  padding: 10px 24px;
-  font-size: 11px;
+  padding: 12px 28px;
+  font-size: 14px;
   text-align: center;
   justify-content: center;
   display: inline-flex;
@@ -431,7 +431,7 @@ canvas {
 
 /* evolve */
 .evolve-window { text-align: center; }
-.evolve-title { font-size: 16px; color: var(--gold); margin-bottom: 12px; letter-spacing: 2px; animation: pulse 800ms infinite alternate; }
+.evolve-title { font-size: 20px; color: var(--gold); margin-bottom: 12px; letter-spacing: 2px; animation: pulse 800ms infinite alternate; }
 #evolveCanvas {
   width: 100%;
   max-width: 256px;
@@ -442,7 +442,7 @@ canvas {
   margin: 0 auto 12px;
   display: block;
 }
-.evolve-text { font-size: 11px; margin-bottom: 14px; color: var(--accent-2); letter-spacing: 1px; }
+.evolve-text { font-size: 14px; margin-bottom: 14px; color: var(--accent-2); letter-spacing: 1px; }
 
 @keyframes pulse {
   from { text-shadow: 0 0 4px rgba(242,193,78,.5); }
@@ -467,24 +467,24 @@ canvas {
   align-items: center;
   padding-top: 12px;
   border-top: 1px dashed var(--line);
-  font-size: 8px;
+  font-size: 11px;
   color: var(--ink-dim);
 }
-.footer-left { display: flex; gap: 6px; }
+.footer-left { display: flex; gap: 10px; }
 .ghost-btn {
   background: transparent;
-  border: 1px solid var(--line);
+  border: 2px solid var(--line);
   color: var(--ink-dim);
   font-family: var(--pixel);
-  font-size: 8px;
-  padding: 6px 10px;
+  font-size: 13px;
+  padding: 12px 20px;
   cursor: pointer;
   letter-spacing: 1px;
 }
 .ghost-btn:hover { color: var(--accent); border-color: var(--accent); }
 #resetBtn:hover { color: var(--danger); border-color: var(--danger); }
 .ghost-btn.muted { color: var(--ink-dim); border-color: var(--line); opacity: .6; }
-.hint { letter-spacing: 1px; }
+.hint { letter-spacing: 1px; font-size: 11px; }
 .hint a { color: var(--ink-dim); text-decoration: underline dotted; }
 .hint a:hover { color: var(--accent); }
 
@@ -516,33 +516,35 @@ canvas {
 /* ---- responsive: phones ---- */
 @media (max-width: 480px) {
   #app { padding: 14px 10px 24px; }
-  .title-bar h1 { font-size: 16px; letter-spacing: 1px; }
+  .title-bar h1 { font-size: 20px; letter-spacing: 1px; }
   .title-bar { padding-bottom: 10px; margin-bottom: 12px; }
-  .day-clock { font-size: 8px; }
+  .day-clock { font-size: 11px; }
 
   .card { padding: 10px; }
-  .card-title { font-size: 9px; }
+  .card-title { font-size: 12px; }
 
   #mantisCanvas { max-width: 220px; }
 
   .action-grid { grid-template-columns: 1fr 1fr; gap: 6px; }
-  .btn { padding: 8px 6px; font-size: 9px; }
-  .btn .emoji { font-size: 16px; }
-  .btn small { font-size: 6px; }
+  .btn { padding: 10px 8px; font-size: 12px; }
+  .btn .emoji { font-size: 20px; }
+  .btn small { font-size: 9px; }
 
   .stat-grid { grid-template-columns: repeat(2, 1fr); }
-  .stat b { font-size: 11px; }
+  .stat b { font-size: 14px; }
 
-  .bar { grid-template-columns: 48px 1fr 64px; gap: 6px; }
-  .bar-label, .bar-num { font-size: 7px; }
+  .bar { grid-template-columns: 56px 1fr 78px; gap: 6px; }
+  .bar-label, .bar-num { font-size: 10px; }
 
-  .log { height: 140px; font-size: 8px; }
+  .log { height: 160px; font-size: 11px; }
 
   .footer-bar {
     flex-direction: column;
     align-items: flex-start;
-    gap: 8px;
+    gap: 10px;
   }
+  .ghost-btn { font-size: 12px; padding: 10px 16px; }
+  .hint { font-size: 10px; }
 
   /* battle overlay — stack vertically */
   .battle-window { padding: 14px 12px; }
@@ -552,16 +554,16 @@ canvas {
     gap: 4px;
   }
   .combatant canvas { max-width: 140px; }
-  .combatant .bar { max-width: 140px; grid-template-columns: 1fr 50px; gap: 6px; }
-  .vs-label { font-size: 11px; padding: 2px 0; }
-  .battle-log { font-size: 8px; height: 70px; }
+  .combatant .bar { max-width: 140px; grid-template-columns: 1fr 56px; gap: 6px; }
+  .vs-label { font-size: 14px; padding: 2px 0; }
+  .battle-log { font-size: 11px; height: 90px; }
   .battle-actions { grid-template-columns: 1fr 1fr; gap: 4px; }
-  .btn.move { padding: 10px 6px; font-size: 9px; }
+  .btn.move { padding: 12px 6px; font-size: 12px; }
 
   .evolve-window { padding: 14px; }
   #evolveCanvas { max-width: 200px; }
-  .evolve-title { font-size: 13px; }
-  .evolve-text { font-size: 10px; }
+  .evolve-title { font-size: 17px; }
+  .evolve-text { font-size: 13px; }
 }
 
 @media (max-width: 360px) {
