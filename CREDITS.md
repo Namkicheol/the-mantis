@@ -10,7 +10,7 @@ exact licensing terms and the original photographer's credit.
 | 알 (egg) | egg.jpg | https://commons.wikimedia.org/wiki/File:Mantis_egg_2005_Spring_001.jpg |
 | 약충 (nymph) | nymph.jpg | https://commons.wikimedia.org/wiki/File:Stagmomantis_carolina_Kaldari_05_cropped.jpg |
 | 준성충 (subadult) | subadult.jpg | https://commons.wikimedia.org/wiki/File:Unidentified_Mantid_Species_(6105939456).jpg |
-| 성충 (adult) | adult.jpg | https://commons.wikimedia.org/wiki/File:Mantis_(European).jpg |
+| 성충 (adult) | adult.jpg | https://commons.wikimedia.org/wiki/File:European_Mantis_(Mantis_religiosa)_-_Guelph,_Ontario_02.jpg |
 | 모기 (mosquito) | mosquito.jpg | https://commons.wikimedia.org/wiki/File:Aedes_aegypti.jpg |
 | 파리 (fly) | fly.jpg | https://commons.wikimedia.org/wiki/File:Common_house_fly,_Musca_domestica.jpg |
 | 귀뚜라미 (cricket) | cricket.jpg | https://commons.wikimedia.org/wiki/File:Gryllus_campestris_MHNT.jpg |
