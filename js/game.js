@@ -156,12 +156,35 @@ function processPendingEvents() {
 }
 
 // ---- evolve overlay ----
+// Two-phase cutscene: molting photo → new stage photo.
+// First stage transition (egg → nymph) is hatching; others are molting.
 function showEvolveOverlay(stage) {
-  $('evolveText').textContent = `사마귀가 ${stage.name}(으)로 진화했다!`;
-  renderCharacter($('evolveCanvas'), stage.sprite);
+  const titleEl  = document.querySelector('#evolveOverlay .evolve-title');
+  const textEl   = $('evolveText');
+  const btnEl    = $('evolveCloseBtn');
+  const canvasEl = $('evolveCanvas');
+
+  const isHatch = stage.key === 'nymph';
+  const phase1Title = isHatch ? '부화!' : '탈피!';
+  const phase1Text  = isHatch ? '알에서 깨어나는 중…' : '낡은 껍질을 벗는 중…';
+
+  // Phase 1: cutscene photo, no continue button
+  titleEl.textContent = phase1Title;
+  textEl.textContent  = phase1Text;
+  btnEl.style.visibility = 'hidden';
+  renderCharacter(canvasEl, 'molting');
   $('evolveOverlay').classList.remove('hidden');
-  UI.logRow(`✨ 진화! → ${stage.name}`, 'good');
+  UI.logRow(`✨ ${phase1Title} → ${stage.name}`, 'good');
   Audio8.sfx('evolve');
+
+  // Phase 2: switch to new stage portrait after a beat
+  setTimeout(() => {
+    if ($('evolveOverlay').classList.contains('hidden')) return; // user closed early
+    titleEl.textContent = '진화!';
+    textEl.textContent  = `사마귀가 ${stage.name}(으)로 진화했다!`;
+    renderCharacter(canvasEl, stage.sprite);
+    btnEl.style.visibility = 'visible';
+  }, 1600);
 }
 
 // ---- battle UI ----

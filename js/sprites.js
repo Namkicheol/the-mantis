@@ -291,6 +291,8 @@ const PhotoSources = {
   nymph:    'assets/img/nymph.jpg',
   subadult: 'assets/img/subadult.jpg',
   adult:    'assets/img/adult.jpg',
+  // transition cutscene
+  molting:  'assets/img/molting.jpg',
   // enemies — original 6
   mosquito: 'assets/img/mosquito.jpg',
   fly:      'assets/img/fly.jpg',
