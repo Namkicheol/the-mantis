@@ -312,11 +312,14 @@ const PhotoSources = {
   // transition cutscenes
   molting:  'assets/img/molting.jpg',
   hatch:    'assets/img/hatch.jpg',
-  // species real photos (4령 adult per species; subadult where available)
+  // species real photos (4령 adult per species; subadult/nymph where available)
   wang_adult:        'assets/img/sp_wang_adult.jpg',
+  wang_subadult:     'assets/img/sp_wang_subadult.jpg',
   hwangla_adult:     'assets/img/sp_hwangla_adult.jpg',
+  hwangla_subadult:  'assets/img/sp_hwangla_subadult.jpg',
   neopjok_adult:     'assets/img/sp_neopjok_adult.jpg',
   neopjok_subadult:  'assets/img/sp_neopjok_subadult.jpg',
+  neopjok_nymph:     'assets/img/sp_neopjok_nymph.jpg',
   jom_adult:         'assets/img/sp_jom_adult.jpg',
   jom_subadult:      'assets/img/sp_jom_subadult.jpg',
   // enemies — original 6
