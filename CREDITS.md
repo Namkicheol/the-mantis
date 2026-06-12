@@ -27,5 +27,20 @@ exact licensing terms and the original photographer's credit.
 | 왕지네 (centipede) | centipede.jpg | https://commons.wikimedia.org/wiki/File:Scolopendra_gigantea.jpg |
 | 전갈 (scorpion) | scorpion.jpg | https://commons.wikimedia.org/wiki/File:Scorpion_Photograph_By_Shantanu_Kuveskar.jpg |
 
+## 사마귀 종별 사진 (species) · 부화 컷신
+
+These photos carry CC-BY / CC-BY-SA terms — attribution is required. Author and
+license are listed below; see each source page for full terms.
+
+| In-game | 학명 | File | Source page | License | Author |
+|---|---|---|---|---|---|
+| 왕사마귀 4령 | *Tenodera sinensis* | sp_wang_adult.jpg | https://commons.wikimedia.org/wiki/File:Tenodera_sinensis_(Mantidae)_-_(imago),_Niagara_(NY),_United_States.jpg | CC BY 3.0 | B. Schoenmakers (Observation.org) |
+| 황라사마귀 4령 | *Statilia maculata* | sp_hwangla_adult.jpg | https://commons.wikimedia.org/wiki/File:Asian_jumping_mantis_(Statilia_maculata)_in_West_Bengal_1.jpg | CC BY-SA 4.0 | Billjones94 (photo: Yogabrata Chakraborty) |
+| 넓적배사마귀 4령 | *Hierodula patellifera* | sp_neopjok_adult.jpg | https://commons.wikimedia.org/wiki/File:Giant_Asian_Mantis_(Hierodula_patellifera)_(15335749960).jpg | CC BY-SA 2.0 | harum.koh (Harum K) |
+| 넓적배사마귀 약충 | *Hierodula patellifera* | sp_neopjok_subadult.jpg | https://commons.wikimedia.org/wiki/File:Neanide_di_Hierodula_Patellifera.jpg | CC BY-SA 4.0 | Termauri / Maurizio Teruzzi (MaTePhoto) |
+| 좀사마귀 4령 | *Tenodera angustipennis* | sp_jom_adult.jpg | https://commons.wikimedia.org/wiki/File:사마귀.JPG | CC BY-SA 3.0 | 등줄메뚜기 (Wikimedia Commons) |
+| 좀사마귀 약충 | *Tenodera angustipennis* | sp_jom_subadult.jpg | https://commons.wikimedia.org/wiki/File:Tenodera_angustipennis_young_nymph.jpg | CC BY-SA 4.0 | Daniel Ballmer |
+| 부화 컷신 (hatch) | *Mantis religiosa* | hatch.jpg | https://commons.wikimedia.org/wiki/File:Mantis_religiosa_hatched_oothecae_in_Spain.jpg | CC BY 4.0 | Gonzalo Ganda Álvarez |
+
 If a specific image's license requires changes (e.g. removal, attribution adjustment),
 please open an issue and it will be addressed.

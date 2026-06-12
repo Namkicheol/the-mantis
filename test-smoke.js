@@ -32,6 +32,8 @@ Mantis.reset();
 assert(Mantis.state.hp === 20, 'initial hp = 20');
 assert(Mantis.state.food === 3, 'initial food = 3');
 assert(Mantis.stage.key === 'egg', 'starts as egg');
+assert(['wang','hwangla','neopjok','jom'].includes(Mantis.state.species), `species assigned (${Mantis.state.species})`);
+assert(['male','female'].includes(Mantis.state.sex), `sex assigned (${Mantis.state.sex})`);
 
 console.log('--- Sprites ---');
 assert(Sprites.egg && Sprites.egg.data.length === 16, 'egg sprite is 16 rows');
@@ -56,7 +58,7 @@ let safety = 100;
 while (Mantis.stage.key === 'egg' && safety-- > 0) {
   Mantis.gainExp(20);
 }
-assert(Mantis.stage.key === 'nymph', `evolved out of egg (now ${Mantis.stage.key})`);
+assert(Mantis.stage.key === 'i1', `evolved out of egg (now ${Mantis.stage.key})`);
 
 console.log('--- Train ---');
 const beforeAtk = Mantis.state.atk;

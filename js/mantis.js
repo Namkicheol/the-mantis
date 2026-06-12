@@ -1,14 +1,38 @@
-// Mantis state: growth stages, stats, evolution, actions.
+// Mantis state: species, sex, growth stages (instars), stats, evolution, actions.
 
+// Growth: 알(egg) → 1령 → 2령 → 3령 → 4령(성충). Egg is not an instar.
 const STAGES = [
-  { key: 'egg',      sprite: 'egg',      name: '알',     label: 'EGG',      minLv: 1,  expToNext: 10 },
-  { key: 'nymph',    sprite: 'nymph',    name: '약충',    label: 'NYMPH',    minLv: 2,  expToNext: 30 },
-  { key: 'subadult', sprite: 'subadult', name: '준성충',  label: 'SUBADULT', minLv: 5,  expToNext: 80 },
-  { key: 'adult',    sprite: 'adult',    name: '성충',    label: 'ADULT',    minLv: 10, expToNext: Infinity },
+  { key: 'egg', sprite: 'egg', name: '알',   label: 'EGG',     minLv: 1,  expToNext: 10 },
+  { key: 'i1',  sprite: 'i1',  name: '1령',  label: '1ST',     minLv: 2,  expToNext: 30 },
+  { key: 'i2',  sprite: 'i2',  name: '2령',  label: '2ND',     minLv: 4,  expToNext: 60 },
+  { key: 'i3',  sprite: 'i3',  name: '3령',  label: '3RD',     minLv: 7,  expToNext: 90 },
+  { key: 'i4',  sprite: 'i4',  name: '4령',  label: '4TH',     minLv: 11, expToNext: Infinity },
 ];
+
+// Species — picked randomly when a new egg is created.
+// `mods` are applied once per evolution (4 times by 4령), so traits grow over time.
+const SPECIES = {
+  wang:    { key: 'wang',    name: '왕사마귀',     blurb: '크고 힘이 세다',     mods: { hp:  4, atk: 1, def: 1, spd: -1 } },
+  hwangla: { key: 'hwangla', name: '황라사마귀',   blurb: '날렵하고 빠르다',     mods: { hp: -1, atk: 0, def: -1, spd: 2 } },
+  neopjok: { key: 'neopjok', name: '넓적배사마귀', blurb: '배가 넓고 단단하다',   mods: { hp:  3, atk: 0, def: 2, spd: -1 } },
+  jom:     { key: 'jom',     name: '좀사마귀',     blurb: '작지만 균형 잡혔다',   mods: { hp:  0, atk: 1, def: 0, spd: 1 } },
+};
+const SPECIES_KEYS = Object.keys(SPECIES);
+
+// Sex — picked randomly. Females larger/stronger, males smaller/faster (real dimorphism).
+const SEXES = {
+  female: { key: 'female', name: '암컷', symbol: '♀', mods: { hp: 2, atk: 1, def: 1, spd: -1 } },
+  male:   { key: 'male',   name: '수컷', symbol: '♂', mods: { hp: -1, atk: 0, def: 0, spd: 2 } },
+};
+const SEX_KEYS = Object.keys(SEXES);
+
+function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
 function defaultMantisState() {
   return {
+    schema: 2,                       // bump when shape changes
+    species: pickRandom(SPECIES_KEYS),
+    sex: pickRandom(SEX_KEYS),
     stageIdx: 0,
     level: 1,
     exp: 0,
@@ -31,15 +55,40 @@ const Mantis = {
   load(saved) {
     if (saved && typeof saved === 'object') {
       this.state = Object.assign(defaultMantisState(), saved);
+      this._migrate(saved);
     }
+  },
+
+  // migrate pre-species (schema 1) saves: 4-stage egg/nymph/subadult/adult → 5-stage instars.
+  _migrate(saved) {
+    const s = this.state;
+    if (saved.schema === undefined || saved.species === undefined) {
+      // old stageIdx: 0 egg, 1 nymph, 2 subadult, 3 adult → new: 0 egg, 1/2/3 instar, 4 adult(4령)
+      const remap = { 0: 0, 1: 1, 2: 2, 3: 4 };
+      if (saved.stageIdx in remap) s.stageIdx = remap[saved.stageIdx];
+      if (saved.species === undefined) s.species = pickRandom(SPECIES_KEYS);
+      if (saved.sex === undefined) s.sex = pickRandom(SEX_KEYS);
+      s.schema = 2;
+    }
+    if (!SPECIES[s.species]) s.species = pickRandom(SPECIES_KEYS);
+    if (!SEXES[s.sex]) s.sex = pickRandom(SEX_KEYS);
   },
 
   get stage() {
     return STAGES[this.state.stageIdx];
   },
 
+  get speciesInfo() { return SPECIES[this.state.species] || SPECIES.wang; },
+  get sexInfo() { return SEXES[this.state.sex] || SEXES.female; },
+
+  // sprite/photo key: egg is generic; instars carry species (+ sex on the adult form).
   get sprite() {
-    return this.stage.sprite;
+    const k = this.stage.key;
+    if (k === 'egg') return 'egg';
+    const sp = this.state.species;
+    if (k === 'i4') return `${sp}_adult_${this.state.sex}`;
+    if (k === 'i2' || k === 'i3') return `${sp}_subadult`;
+    return `${sp}_nymph`; // i1
   },
 
   // ---- core mutations (return log entries) ----
@@ -81,6 +130,17 @@ const Mantis = {
     return { ok: true, msg: `푹 쉬었다. HP ${before}→${s.hp}`, tone: 'good' };
   },
 
+  // apply species + sex stat traits, once per evolution
+  _applyTraitMods() {
+    const s = this.state;
+    for (const src of [this.speciesInfo.mods, this.sexInfo.mods]) {
+      s.maxHp = Math.max(5, s.maxHp + (src.hp || 0));
+      s.atk = Math.max(1, s.atk + (src.atk || 0));
+      s.def = Math.max(0, s.def + (src.def || 0));
+      s.spd = Math.max(1, s.spd + (src.spd || 0));
+    }
+  },
+
   // exp gain + level/evolution check
   gainExp(amount) {
     const s = this.state;
@@ -103,10 +163,11 @@ const Mantis = {
       if (nextStage && s.level >= nextStage.minLv) {
         s.stageIdx += 1;
         s.maxHp += 10;
-        s.hp = s.maxHp;
         s.atk += 2;
         s.def += 1;
         s.spd += 1;
+        this._applyTraitMods();   // species/sex traits show & grow at each molt
+        s.hp = s.maxHp;
         events.push({ type: 'evolve', stage: this.stage });
       }
     }

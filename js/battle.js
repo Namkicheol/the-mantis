@@ -64,7 +64,7 @@ const MOVES = {
   devour: {
     name: '포식',
     desc: 'HP 흡수',
-    minStage: 3,
+    minStage: 4,   // 4령(성충) 전용
     use(attacker, defender) {
       const dmg = damageFormula(Math.ceil(attacker.atk * 0.8), defender.def, 1.0, 0.05);
       defender.hp = Math.max(0, defender.hp - dmg.value);
@@ -89,7 +89,7 @@ function damageFormula(atk, def, mult, critRate) {
 // pick an enemy roughly matched to the mantis level
 function pickEnemyFor(mantisState) {
   const lv = mantisState.level;
-  const stage = mantisState.stageIdx;
+  const stage = mantisState.stageIdx;   // 0 egg, 1~4 = 1령~4령
   let pool;
   if (stage === 0) {
     pool = []; // egg can't fight
@@ -97,7 +97,7 @@ function pickEnemyFor(mantisState) {
     pool = ENEMIES.filter(e => e.tier <= 1);
   } else if (stage === 2) {
     pool = ENEMIES.filter(e => e.tier <= 2);
-  } else if (lv < 14) {
+  } else if (stage === 3 || lv < 16) {
     pool = ENEMIES.filter(e => e.tier <= 3);
   } else {
     pool = ENEMIES;

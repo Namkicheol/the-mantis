@@ -17,8 +17,12 @@ const UI = {
   refresh() {
     const s = Mantis.state;
     const stage = Mantis.stage;
-    $('mantisName').textContent = stage.name;
-    $('mantisStage').textContent = `${stage.label} · Lv. ${s.level}`;
+    if (s.stageIdx === 0) {
+      $('mantisName').textContent = '알';
+    } else {
+      $('mantisName').textContent = `${Mantis.speciesInfo.name} ${Mantis.sexInfo.symbol}`;
+    }
+    $('mantisStage').textContent = `${stage.name} · Lv. ${s.level}`;
     $('dayLabel').textContent = `DAY ${s.day}`;
     $('phaseLabel').textContent = (Math.floor(s.timeMs / 60_000) % 2 === 0) ? '낮' : '밤';
 
@@ -164,25 +168,31 @@ function showEvolveOverlay(stage) {
   const btnEl    = $('evolveCloseBtn');
   const canvasEl = $('evolveCanvas');
 
-  const isHatch = stage.key === 'nymph';
+  const isHatch = stage.key === 'i1';
   const phase1Title = isHatch ? '부화!' : '탈피!';
   const phase1Text  = isHatch ? '알에서 깨어나는 중…' : '낡은 껍질을 벗는 중…';
+  const spName = Mantis.speciesInfo.name;
 
-  // Phase 1: cutscene photo, no continue button
+  // Phase 1: cutscene photo (hatch for egg→1령, molting otherwise), no continue button
   titleEl.textContent = phase1Title;
   textEl.textContent  = phase1Text;
   btnEl.style.visibility = 'hidden';
-  renderCharacter(canvasEl, 'molting');
+  renderCharacter(canvasEl, isHatch ? 'hatch' : 'molting');
   $('evolveOverlay').classList.remove('hidden');
   UI.logRow(`✨ ${phase1Title} → ${stage.name}`, 'good');
   Audio8.sfx('evolve');
 
-  // Phase 2: switch to new stage portrait after a beat
+  // Phase 2: switch to the actual species portrait after a beat
   setTimeout(() => {
     if ($('evolveOverlay').classList.contains('hidden')) return; // user closed early
-    titleEl.textContent = '진화!';
-    textEl.textContent  = `사마귀가 ${stage.name}(으)로 진화했다!`;
-    renderCharacter(canvasEl, stage.sprite);
+    if (isHatch) {
+      titleEl.textContent = '탄생!';
+      textEl.textContent  = `${spName} ${Mantis.sexInfo.name}(이)가 태어났다!`;
+    } else {
+      titleEl.textContent = '탈피!';
+      textEl.textContent  = `${spName}이(가) ${stage.name}(으)로 자랐다!`;
+    }
+    renderCharacter(canvasEl, Mantis.sprite);
     btnEl.style.visibility = 'visible';
   }, 1600);
 }
@@ -201,7 +211,7 @@ function startBattle() {
 
   $('battleTitle').textContent = `VS ${b.enemy.name}`;
   $('enemyCombatName').textContent = b.enemy.name;
-  $('playerCombatName').textContent = `${Mantis.stage.name} (Lv. ${Mantis.state.level})`;
+  $('playerCombatName').textContent = `${Mantis.speciesInfo.name} ${Mantis.sexInfo.symbol} ${Mantis.stage.name} (Lv. ${Mantis.state.level})`;
   renderCharacter($('playerBattleCanvas'), Mantis.sprite);
   renderCharacter($('enemyBattleCanvas'), b.enemy.sprite, { flip: true });
 
