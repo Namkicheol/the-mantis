@@ -5,11 +5,6 @@ const Palettes = {
   egg:    ['', '#5c3a1e', '#8a5a2c', '#caa066', '#f5e0a8', '#fffadd', '#3a230f'],
   mantis: ['', '#1d3a14', '#3a7728', '#62b840', '#a6e07a', '#e7f7c2', '#0e1f08', '#f2c14e', '#c43c3c'],
   enemy:  ['', '#222', '#4a4a4a', '#888', '#bbb', '#e0e0e0', '#c43c3c', '#f2c14e', '#5a3a16', '#8a5a2c'],
-  // species recolors (body indices 1-5, eye 6, accents 7-8 shared)
-  wang:    ['', '#15300f', '#2f6a22', '#4fa235', '#8fd06a', '#dcf3b0', '#0a1805', '#f2c14e', '#c43c3c'],
-  hwangla: ['', '#5a3a12', '#8a6320', '#bb9038', '#ddc070', '#f3e6b0', '#241400', '#f2c14e', '#c43c3c'],
-  neopjok: ['', '#36401a', '#5d6e2a', '#86a23f', '#b6cd74', '#e8f3c2', '#161c06', '#f2c14e', '#c43c3c'],
-  jom:     ['', '#3a3a30', '#5e5e4c', '#8a8a72', '#b6b6a0', '#e4e4d6', '#15150f', '#f2c14e', '#c43c3c'],
 };
 
 // helper: build 16x16 from a string template (16 chars × 16 rows)
@@ -265,19 +260,6 @@ Sprites.centipede   = Sprites.spider;
 Sprites.stagbeetle  = Sprites.cricket;
 Sprites.scorpion    = Sprites.spider;
 
-// instar generic shapes (egg + 1령~4령), used as ultimate pixel fallback
-Sprites.i1 = Sprites.nymph;
-Sprites.i2 = Sprites.subadult;
-Sprites.i3 = Sprites.subadult;
-Sprites.i4 = Sprites.adult;
-
-// species-colored pixel variants (same shapes, swapped palette) for each life form
-for (const sp of ['wang', 'hwangla', 'neopjok', 'jom']) {
-  Sprites[`${sp}_nymph`]    = { palette: sp, data: Sprites.nymph.data };
-  Sprites[`${sp}_subadult`] = { palette: sp, data: Sprites.subadult.data };
-  Sprites[`${sp}_adult`]    = { palette: sp, data: Sprites.adult.data };
-}
-
 // draw a 16x16 sprite onto a canvas, scaled to fit
 function drawSprite(ctx, spriteName, scale, opts = {}) {
   const sprite = Sprites[spriteName];
@@ -340,26 +322,26 @@ const PhotoSources = {
   scorpion:    'assets/img/scorpion.jpg',
 };
 
-// Resolve a render key (e.g. 'wang_adult_female', 'jom_subadult', 'egg') to the
-// best available real photo / pixel sprite. Photos only match species-qualified
-// or bare keys — never the generic stage photo — so a species without its own
-// juvenile photo shows species-tinted pixel art instead of a mismatched photo.
+// Resolve a render key (e.g. 'wang_adult_female', 'jom_subadult', 'egg') to a real
+// photo. Rendering is photo-only — every key falls back, within the same species,
+// to an older life-stage photo so no stage is ever left without a picture.
+//   sp_adult_sex → sp_adult
+//   sp_nymph     → sp_subadult → sp_adult   (1령 reuses the species' young photo)
+//   sp_subadult  → sp_adult
 function photoFallbackKeys(key) {
   const p = key.split('_');
-  if (p.length === 3) return [key, p[0] + '_' + p[1]]; // wang_adult_female → wang_adult
-  return [key];                                         // species_subadult / egg / molting
+  if (p.length === 3) return [key, `${p[0]}_${p[1]}`];     // sp_adult_sex → sp_adult
+  if (p.length === 2) {
+    const [sp, form] = p;
+    if (form === 'nymph')    return [`${sp}_nymph`, `${sp}_subadult`, `${sp}_adult`];
+    if (form === 'subadult') return [`${sp}_subadult`, `${sp}_adult`];
+    return [key];
+  }
+  return [key];                                            // egg / hatch / molting / enemy
 }
 function resolvePhotoKey(key) {
   for (const k of photoFallbackKeys(key)) if (PhotoSources[k]) return k;
   return null;
-}
-function resolveSpriteKey(key) {
-  const p = key.split('_');
-  const candidates = [key];
-  if (p.length === 3) { candidates.push(p[0] + '_' + p[1]); candidates.push(p[1]); }
-  else if (p.length === 2) { candidates.push(p[1]); }
-  for (const k of candidates) if (Sprites[k]) return k;
-  return 'i4';
 }
 
 // image cache + per-canvas pending redraws
@@ -409,7 +391,8 @@ function drawPhotoContain(ctx, img, x, y, w, h, flip) {
 }
 
 // render character onto a canvas, centered, with optional ground shadow.
-// Uses photographic image when available, falls back to pixel sprite.
+// Photo-only: shows the real photo; while it loads, only the shadow is drawn
+// (a redraw is queued for when the image arrives). No pixel-art rendering.
 function renderCharacter(canvas, spriteName, opts = {}) {
   const ctx = canvas.getContext('2d');
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -437,15 +420,7 @@ function renderCharacter(canvas, spriteName, opts = {}) {
   }
 
   if (photo && !photo.failed) {
-    // queue a redraw when the image finishes loading
+    // image still loading — queue a redraw for when it arrives (shadow stays)
     PendingRedraws.set(canvas, { name: spriteName, photoKey, opts });
   }
-
-  // pixel-art fallback (also used as the initial placeholder)
-  ctx.imageSmoothingEnabled = false;
-  const scale = Math.floor(Math.min(W, H) / 16);
-  const w = scale * 16;
-  const ox = Math.floor((W - w) / 2);
-  const oy = Math.floor((H - w) / 2);
-  drawSprite(ctx, resolveSpriteKey(spriteName), scale, { ox, oy, flip: opts.flip });
 }
